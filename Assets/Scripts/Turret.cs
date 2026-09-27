@@ -59,6 +59,7 @@ public class Turret : MonoBehaviour
         health -= damage;
         if (health <= 0)
         {
+            if (WaveManager.Instance != null) WaveManager.Instance.AddKill();
             if (destroyEffect != null)
             {
                 Instantiate(destroyEffect, transform.position, Quaternion.identity);

@@ -71,7 +71,7 @@ MonoBehaviour:
   speed: 12
   damage: 1
   lifetime: 3
-  hitEffect: {fileID: 0}
+  hitEffect: {fileID: 3687331162478659798, guid: 5b71313cdf09ef543afa337bdcd6bd49, type: 3}
   owner: {fileID: 0}
 --- !u!212 &3466927099321695976
 SpriteRenderer:

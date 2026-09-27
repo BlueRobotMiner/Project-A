@@ -11,6 +11,7 @@ public class PlayerLaneMovement : MonoBehaviour
     public float maxSpeedMultiplier = 2f;
     public float speedUpRate = 0.5f;
     public float slowDownRate = 1f;
+    public float maxObjectSpeedMultiplier = 3f;
 
     private int currentLane;
     private float targetY;
@@ -19,6 +20,7 @@ public class PlayerLaneMovement : MonoBehaviour
     void Start()
     {
         BackGroundScroller.SpeedMultiplier = 1f;
+        ObjectScroller.SpeedMultiplier = 1f;
         currentLane = laneCount / 2;
         targetY = GetLaneY(currentLane);
         transform.position = new Vector3(transform.position.x, targetY, transform.position.z);
@@ -71,6 +73,9 @@ public class PlayerLaneMovement : MonoBehaviour
                 returningToDefault = false;
             }
         }
+
+        float t = maxSpeedMultiplier > 1f ? Mathf.InverseLerp(1f, maxSpeedMultiplier, BackGroundScroller.SpeedMultiplier) : 0f;
+        ObjectScroller.SpeedMultiplier = Mathf.Lerp(1f, maxObjectSpeedMultiplier, t);
     }
 
     public float GetLaneY(int lane)

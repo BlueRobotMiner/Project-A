@@ -44,10 +44,7 @@ public class Projectile : MonoBehaviour
         if (target != null)
         {
             target.TakeHit(damage);
-            if (hitEffect != null)
-            {
-                Instantiate(hitEffect, transform.position, Quaternion.identity);
-            }
+            EffectSpawner.SpawnHit(hitEffect, col, transform.position, Vector2.right);
             Destroy(gameObject);
         }
     }

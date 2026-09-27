@@ -34,24 +34,9 @@ public class PlayerShooter : MonoBehaviour
     {
         if (torpedoPrefab == null) return;
 
-        Turret closest = null;
-        float best = Mathf.Infinity;
-        foreach (Turret t in FindObjectsOfType<Turret>())
-        {
-            if (!t.IsOnScreen) continue;
-            float d = (t.transform.position - transform.position).sqrMagnitude;
-            if (d < best)
-            {
-                best = d;
-                closest = t;
-            }
-        }
-        if (closest == null) return;
-
         nextTorpedoTime = Time.time + torpedoCooldown;
         Transform point = torpedoPoint != null ? torpedoPoint : transform;
-        GameObject torpedo = Instantiate(torpedoPrefab, point.position, Quaternion.Euler(0f, 0f, 180f));
-        torpedo.GetComponent<Torpedo>().target = closest;
+        Instantiate(torpedoPrefab, point.position, Quaternion.Euler(0f, 0f, -90f));
     }
 
     Transform GetNextFirePoint()

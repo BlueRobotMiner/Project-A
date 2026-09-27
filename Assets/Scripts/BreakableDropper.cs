@@ -2,12 +2,18 @@ using UnityEngine;
 
 public class BreakableDropper : MonoBehaviour
 {
+    public enum Rarity { Regular, Shiny, Rainbow }
+
+    [HideInInspector] public Rarity rarity = Rarity.Regular;
     public int hitsToBreak = 3;
     public float contactDamage = 20f;
     public float lifetime = 20f;
     public GameObject dropPrefab;
     public GameObject breakEffect;
     public float breakEffectLifetime = 2f;
+    public GameObject stardustPrefab;
+    public int minStardust = 3;
+    public int maxStardust = 6;
     public bool randomizeScale = true;
     public float minScale = 1f;
     public float maxScale = 2f;
@@ -46,6 +52,20 @@ public class BreakableDropper : MonoBehaviour
 
     void Break()
     {
+        if (WaveManager.Instance != null) WaveManager.Instance.AddKill();
+
+        if (stardustPrefab != null)
+        {
+            ObjectScroller ownScroller = GetComponent<ObjectScroller>();
+            int count = Random.Range(minStardust, maxStardust + 1);
+            for (int i = 0; i < count; i++)
+            {
+                Vector3 pos = transform.position + (Vector3)(Random.insideUnitCircle * 0.2f);
+                GameObject dust = Instantiate(stardustPrefab, pos, Quaternion.identity);
+                StardustPickup pickup = dust.GetComponent<StardustPickup>();
+                if (pickup != null && ownScroller != null) pickup.scrollSpeed = ownScroller.scrollSpeed;
+            }
+        }
         if (dropPrefab != null)
         {
             Instantiate(dropPrefab, transform.position, Quaternion.identity);

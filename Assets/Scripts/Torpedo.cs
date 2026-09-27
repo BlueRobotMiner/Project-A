@@ -11,8 +11,7 @@ public class Torpedo : MonoBehaviour
     public float lifetime = 6f;
     public GameObject hitEffect;
 
-    [HideInInspector] public Turret target;
-
+    private Transform target;
     private Rigidbody2D rb;
     private Camera cam;
     private Vector3 aimOffset;
@@ -23,18 +22,55 @@ public class Torpedo : MonoBehaviour
         cam = Camera.main;
         rb = GetComponent<Rigidbody2D>();
         rb.bodyType = RigidbodyType2D.Kinematic;
-        if (Random.value < missChance)
-        {
-            aimOffset = Random.insideUnitCircle.normalized * missOffset;
-        }
+        AcquireTarget();
         Destroy(gameObject, lifetime);
+    }
+
+    void AcquireTarget()
+    {
+        target = FindClosestTurret();
+        if (target == null) target = FindClosestBreakable();
+        aimOffset = target != null && Random.value < missChance ? (Vector3)(Random.insideUnitCircle.normalized * missOffset) : Vector3.zero;
+    }
+
+    Transform FindClosestTurret()
+    {
+        Transform best = null;
+        float bestDist = Mathf.Infinity;
+        foreach (Turret t in FindObjectsOfType<Turret>())
+        {
+            if (!t.IsOnScreen) continue;
+            float d = (t.transform.position - transform.position).sqrMagnitude;
+            if (d < bestDist) { bestDist = d; best = t.transform; }
+        }
+        return best;
+    }
+
+    Transform FindClosestBreakable()
+    {
+        Transform best = null;
+        float bestDist = Mathf.Infinity;
+        foreach (BreakableDropper b in FindObjectsOfType<BreakableDropper>())
+        {
+            Vector3 vp = cam.WorldToViewportPoint(b.transform.position);
+            if (vp.x < 0f || vp.x > 1f || vp.y < 0f || vp.y > 1f) continue;
+            if (b.transform.position.x < transform.position.x) continue;
+            float d = (b.transform.position - transform.position).sqrMagnitude;
+            if (d < bestDist) { bestDist = d; best = b.transform; }
+        }
+        return best;
     }
 
     void Update()
     {
+        if (homing && target == null)
+        {
+            AcquireTarget();
+        }
+
         if (homing && target != null)
         {
-            Vector3 aimPoint = target.transform.position + aimOffset;
+            Vector3 aimPoint = target.position + aimOffset;
             Vector2 dir = aimPoint - transform.position;
             if (aimOffset != Vector3.zero && dir.magnitude < 0.3f)
             {
@@ -57,14 +93,13 @@ public class Torpedo : MonoBehaviour
     void OnTriggerEnter2D(Collider2D col)
     {
         Turret turret = col.GetComponent<Turret>();
-        if (turret != null)
-        {
-            turret.TakeHit(damage);
-            if (hitEffect != null)
-            {
-                Instantiate(hitEffect, transform.position, Quaternion.identity);
-            }
-            Destroy(gameObject);
-        }
+        BreakableDropper breakable = col.GetComponent<BreakableDropper>();
+        if (turret == null && breakable == null) return;
+
+        if (turret != null) turret.TakeHit(damage);
+        else breakable.TakeHit(damage);
+
+        EffectSpawner.SpawnHit(hitEffect, col, transform.position, transform.up);
+        Destroy(gameObject);
     }
 }

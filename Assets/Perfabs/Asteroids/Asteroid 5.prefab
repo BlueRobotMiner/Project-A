@@ -152,12 +152,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3223c294b6e2a8469c39a7d0b00ba9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rarity: 0
   hitsToBreak: 3
   contactDamage: 20
   lifetime: 20
   dropPrefab: {fileID: 0}
   breakEffect: {fileID: 5084562225505736590, guid: e6a1bd8a3af57184e975e9d45e088c1e, type: 3}
   breakEffectLifetime: 2
+  stardustPrefab: {fileID: 7478214533604584415, guid: 530bca96e35cbc247962728345f73462, type: 3}
+  minStardust: 3
+  maxStardust: 20
   randomizeScale: 1
   minScale: 1
   maxScale: 2
