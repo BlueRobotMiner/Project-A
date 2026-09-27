@@ -4,26 +4,27 @@ using UnityEngine;
 
 public class BackGroundScroller : MonoBehaviour
 {
-    public BoxCollider2D collider;
+    public BoxCollider2D Collider;
     public Rigidbody2D rb;
     public float scrollSpeed = -2f;
+    public static float SpeedMultiplier = 1f;
     private float width;
     private Camera cam;
 
     void Start()
     {
-        collider = GetComponent<BoxCollider2D>();
+        Collider = GetComponent<BoxCollider2D>();
         rb = GetComponent<Rigidbody2D>();
         cam = Camera.main;
 
         width = GetComponent<SpriteRenderer>().bounds.size.x;
-        collider.enabled = false;
+        Collider.enabled = false;
     }
 
     void Update()
     {
         // re-applied every frame so Inspector edits take effect live
-        rb.velocity = new Vector2(scrollSpeed, 0);
+        rb.velocity = new Vector2(scrollSpeed * SpeedMultiplier, 0);
 
         float dist = Mathf.Abs(cam.transform.position.z - transform.position.z);
         float leftEdge = cam.ViewportToWorldPoint(new Vector3(0f, 0f, dist)).x;

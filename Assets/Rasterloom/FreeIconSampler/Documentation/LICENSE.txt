@@ -1,0 +1,46 @@
+RASTERLOOM ICON PACK LICENCE
+Version 1.0 - 2026-08-23
+
+Copyright (c) 2026 Rasterloom. All rights reserved.
+
+1. GRANT
+   On purchase you receive a worldwide, perpetual, non-exclusive,
+   royalty-free licence to use, copy, modify and adapt the icons in this
+   pack for commercial and non-commercial projects.
+
+2. YOU MAY
+   a) Use the icons in an unlimited number of games, apps, websites,
+      videos, printed material and prototypes.
+   b) Use them in commercial products with no revenue cap and no
+      attribution requirement (attribution is welcome, never required).
+   c) Modify, recolour, combine, animate and extend the icons.
+   d) Use them in work you deliver to clients, including work-for-hire,
+      as long as the icons are embedded in that work as part of a larger
+      product.
+   e) Use them in projects with more than one developer on your team.
+
+3. YOU MAY NOT
+   a) Resell, sublicense, rent, share or redistribute the icon files
+      themselves - as SVG, PNG, sprite sheet, icon font or any other
+      format - whether alone, repackaged, bundled, or as part of another
+      asset pack, template marketplace, or "free assets" collection.
+   b) Include the icons in a product whose main value is the icons
+      themselves (for example, an icon library, an icon-browsing app, or
+      a design-asset subscription).
+   c) Register the icons, or any recognisable derivative of them, as a
+      trademark or logo.
+   d) Claim authorship of the original icon set.
+
+4. NO WARRANTY
+   The icons are provided "as is", without warranty of any kind, express
+   or implied. In no event shall the author be liable for any claim,
+   damages or other liability arising from the use of these icons.
+
+5. ORIGIN OF THE ARTWORK
+   Every icon in this pack was procedurally generated with custom code
+   written for this pack. The icons are original geometric artwork. They
+   are not traced from third-party material and were not produced by an
+   image-generation model.
+
+Questions about a use case not covered here: assume it is allowed if it is
+not resale of the files themselves.

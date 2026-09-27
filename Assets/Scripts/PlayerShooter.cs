@@ -1,0 +1,71 @@
+using UnityEngine;
+
+public class PlayerShooter : MonoBehaviour
+{
+    public GameObject weapon_prefab;
+    public Transform[] firePoints = new Transform[5];
+    public float fireRate = 0.25f;
+    public GameObject torpedoPrefab;
+    public Transform torpedoPoint;
+    public float torpedoCooldown = 1.5f;
+    public KeyCode torpedoKey = KeyCode.E;
+
+    private float nextFireTime;
+    private float nextTorpedoTime;
+    private int fireIndex;
+
+    void Update()
+    {
+        if ((Input.GetKeyDown(torpedoKey) || Input.GetMouseButtonDown(1)) && Time.time >= nextTorpedoTime)
+        {
+            FireTorpedo();
+        }
+
+        if ((Input.GetKey(KeyCode.Space) || Input.GetMouseButton(0)) && Time.time >= nextFireTime)
+        {
+            nextFireTime = Time.time + fireRate;
+            Transform point = GetNextFirePoint();
+            GameObject bullet = Instantiate(weapon_prefab, point.position, Quaternion.Euler(0f, 0f, -90f));
+            bullet.GetComponent<Projectile>().owner = gameObject;
+        }
+    }
+
+    void FireTorpedo()
+    {
+        if (torpedoPrefab == null) return;
+
+        Turret closest = null;
+        float best = Mathf.Infinity;
+        foreach (Turret t in FindObjectsOfType<Turret>())
+        {
+            if (!t.IsOnScreen) continue;
+            float d = (t.transform.position - transform.position).sqrMagnitude;
+            if (d < best)
+            {
+                best = d;
+                closest = t;
+            }
+        }
+        if (closest == null) return;
+
+        nextTorpedoTime = Time.time + torpedoCooldown;
+        Transform point = torpedoPoint != null ? torpedoPoint : transform;
+        GameObject torpedo = Instantiate(torpedoPrefab, point.position, Quaternion.Euler(0f, 0f, 180f));
+        torpedo.GetComponent<Torpedo>().target = closest;
+    }
+
+    Transform GetNextFirePoint()
+    {
+        int count = Mathf.Min(firePoints.Length, 5);
+        for (int i = 0; i < count; i++)
+        {
+            Transform point = firePoints[fireIndex % count];
+            fireIndex = (fireIndex + 1) % count;
+            if (point != null)
+            {
+                return point;
+            }
+        }
+        return transform;
+    }
+}
