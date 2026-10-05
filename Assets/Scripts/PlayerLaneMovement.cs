@@ -12,10 +12,17 @@ public class PlayerLaneMovement : MonoBehaviour
     public float speedUpRate = 0.5f;
     public float slowDownRate = 1f;
     public float maxObjectSpeedMultiplier = 3f;
+    public float introDuration = 1f;
+    public float introOffscreenOffset = 1f;
+
+    public static bool IntroPlaying;
 
     private int currentLane;
     private float targetY;
     private bool returningToDefault;
+    private float introStartX;
+    private float introEndX;
+    private float introTime;
 
     void Start()
     {
@@ -24,10 +31,39 @@ public class PlayerLaneMovement : MonoBehaviour
         currentLane = laneCount / 2;
         targetY = GetLaneY(currentLane);
         transform.position = new Vector3(transform.position.x, targetY, transform.position.z);
+
+        Camera cam = Camera.main;
+        introEndX = transform.position.x;
+        introStartX = introEndX;
+        if (cam != null && introDuration > 0f)
+        {
+            float dist = Mathf.Abs(cam.transform.position.z - transform.position.z);
+            SpriteRenderer sr = GetComponentInChildren<SpriteRenderer>();
+            float halfWidth = sr != null ? sr.bounds.extents.x : 0.5f;
+            introStartX = cam.ViewportToWorldPoint(new Vector3(0f, 0.5f, dist)).x - halfWidth - introOffscreenOffset;
+            transform.position = new Vector3(introStartX, targetY, transform.position.z);
+        }
+        introTime = 0f;
+        IntroPlaying = introStartX != introEndX;
+    }
+
+    void OnDisable()
+    {
+        IntroPlaying = false;
     }
 
     void Update()
     {
+        if (PauseMenu.IsPaused) return;
+        if (IntroPlaying)
+        {
+            introTime += Time.deltaTime;
+            float t = Mathf.Clamp01(introTime / introDuration);
+            float eased = 1f - (1f - t) * (1f - t);
+            transform.position = new Vector3(Mathf.Lerp(introStartX, introEndX, eased), targetY, transform.position.z);
+            if (t >= 1f) IntroPlaying = false;
+            return;
+        }
         UpdateScrollSpeed();
 
         if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))

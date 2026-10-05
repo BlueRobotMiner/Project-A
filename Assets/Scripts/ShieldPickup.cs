@@ -36,6 +36,7 @@ public class ShieldPickup : MonoBehaviour
         if (shield != null)
         {
             shield.Recharge(rechargeAmount);
+            AudioManager.Play(AudioManager.Sfx.ShieldPickup);
             Destroy(gameObject);
         }
     }

@@ -13,6 +13,9 @@ public class HUDController : MonoBehaviour
     public TMP_Text speedText;
     public PlayerStardust playerStardust;
     public TMP_Text stardustText;
+    public GameObject bossPanel;
+    public Slider bossSlider;
+    public TMP_Text bossText;
     public string speedUnit = " km/s";
     public float barSmoothSpeed = 5f;
 
@@ -23,6 +26,8 @@ public class HUDController : MonoBehaviour
         if (playerStardust == null) playerStardust = FindObjectOfType<PlayerStardust>();
         SetupSlider(hullSlider);
         SetupSlider(shieldSlider);
+        SetupSlider(bossSlider);
+        if (bossPanel != null) bossPanel.SetActive(false);
     }
 
     void Update()
@@ -34,6 +39,12 @@ public class HUDController : MonoBehaviour
         if (playerShield != null)
         {
             UpdateBar(shieldSlider, shieldText, playerShield.currentShield, playerShield.maxShield);
+        }
+        Boss boss = Boss.Active;
+        if (bossPanel != null && bossPanel.activeSelf != (boss != null)) bossPanel.SetActive(boss != null);
+        if (boss != null)
+        {
+            UpdateBar(bossSlider, bossText, boss.health, boss.maxHealth);
         }
         if (stardustText != null && playerStardust != null)
         {

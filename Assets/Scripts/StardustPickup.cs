@@ -117,7 +117,11 @@ public class StardustPickup : MonoBehaviour
 
         if (t >= 1f)
         {
-            if (collector != null && collector.isActiveAndEnabled) collector.Add(amount);
+            if (collector != null && collector.isActiveAndEnabled)
+            {
+                collector.Add(amount);
+                AudioManager.Play(AudioManager.Sfx.StardustPickup);
+            }
             Destroy(gameObject);
         }
     }

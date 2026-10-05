@@ -2,13 +2,16 @@ using UnityEngine;
 
 public class ResourcePickup : MonoBehaviour
 {
-    public enum PickupType { Stardust, ShieldBuff, Card }
+    public enum PickupType { Stardust, ShieldBuff, Card, SupplyCrate }
 
     public PickupType type = PickupType.Stardust;
     public int stardustAmount = 1;
     public float shieldBuffAmount = 25f;
     public float shieldBuffDuration = 30f;
     public string cardId = "PlaceholderCard";
+    public float repairAmount = 25f;
+    public float shieldAmount = 25f;
+    [HideInInspector] public float amountMultiplier = 1f;
     public float floatSpeed = 3f;
     public float lifetime = 15f;
 
@@ -42,17 +45,41 @@ public class ResourcePickup : MonoBehaviour
             case PickupType.Stardust:
                 PlayerStardust stardust = col.GetComponent<PlayerStardust>();
                 if (stardust != null) stardust.Add(stardustAmount);
+                AudioManager.Play(AudioManager.Sfx.StardustPickup);
                 break;
             case PickupType.ShieldBuff:
                 PlayerShield shield = col.GetComponent<PlayerShield>();
                 if (shield != null) shield.ApplyBuff(shieldBuffAmount, shieldBuffDuration);
+                AudioManager.Play(AudioManager.Sfx.ShieldPickup);
                 break;
             case PickupType.Card:
                 PlayerRunCards cards = col.GetComponent<PlayerRunCards>();
                 if (cards != null) cards.AddCard(cardId);
                 break;
+            case PickupType.SupplyCrate:
+                OpenCrate(col.GetComponent<PlayerHealth>(), col.GetComponent<PlayerShield>());
+                break;
         }
 
         Destroy(gameObject);
+    }
+
+    void OpenCrate(PlayerHealth health, PlayerShield shield)
+    {
+        bool healthFull = health == null || health.currentHealth >= health.maxHealth;
+        bool shieldFull = shield == null || shield.currentShield >= shield.maxShield;
+        bool repair = healthFull != shieldFull ? !healthFull : Random.value < 0.5f;
+
+        AudioManager.Play(AudioManager.Sfx.CratePickup);
+        if (repair && health != null)
+        {
+            health.Heal(repairAmount * amountMultiplier);
+            AudioManager.Play(AudioManager.Sfx.RepairPickup);
+        }
+        else if (shield != null)
+        {
+            shield.Recharge(shieldAmount * amountMultiplier);
+            AudioManager.Play(AudioManager.Sfx.ShieldPickup);
+        }
     }
 }

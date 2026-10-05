@@ -51,6 +51,7 @@ public class Turret : MonoBehaviour
             Transform point = firePoint != null ? firePoint : aim;
             GameObject shot = Instantiate(enemyProjectilePrefab, point.position, aim.rotation);
             shot.GetComponent<EnemyProjectile>().owner = gameObject;
+            AudioManager.Play(AudioManager.Sfx.EnemyLaser);
         }
     }
 
@@ -60,6 +61,7 @@ public class Turret : MonoBehaviour
         if (health <= 0)
         {
             if (WaveManager.Instance != null) WaveManager.Instance.AddKill();
+            AudioManager.Play(AudioManager.Sfx.ShipExplode);
             if (destroyEffect != null)
             {
                 Instantiate(destroyEffect, transform.position, Quaternion.identity);

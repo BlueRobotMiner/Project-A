@@ -154,6 +154,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rarity: 0
   hitsToBreak: 3
+  healthPerWave: 0.25
+  shinyHealthMultiplier: 1.5
+  rainbowHealthMultiplier: 2.5
   contactDamage: 20
   lifetime: 20
   dropPrefab: {fileID: 0}
@@ -162,6 +165,10 @@ MonoBehaviour:
   stardustPrefab: {fileID: 7478214533604584415, guid: 530bca96e35cbc247962728345f73462, type: 3}
   minStardust: 3
   maxStardust: 20
+  crateDropPrefab: {fileID: 7672334660881135139, guid: 18330907918b36f43bea580a651eb967, type: 3}
+  crateDropChance: 0.2
+  shinyCrateMultiplier: 2
+  rainbowCrateMultiplier: 3
   randomizeScale: 1
   minScale: 1
   maxScale: 2

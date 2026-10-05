@@ -5,6 +5,7 @@ public class Projectile : MonoBehaviour
 {
     public float speed = 12f;
     public int damage = 1;
+    public float damagePerUpgrade = 0.25f;
     public float lifetime = 3f;
     public GameObject hitEffect;
 
@@ -40,10 +41,22 @@ public class Projectile : MonoBehaviour
     {
         if (col.gameObject == owner) return;
 
+        float hitDamage = damage * (1f + SaveSystem.Data.firepowerLevel * damagePerUpgrade);
+        Boss boss = col.GetComponent<Boss>();
+        if (boss != null)
+        {
+            boss.TakeHit(hitDamage);
+            AudioManager.Play(AudioManager.Sfx.ProjectileHit);
+            EffectSpawner.SpawnHit(hitEffect, col, transform.position, Vector2.right);
+            Destroy(gameObject);
+            return;
+        }
+
         BreakableDropper target = col.GetComponent<BreakableDropper>();
         if (target != null)
         {
-            target.TakeHit(damage);
+            target.TakeHit(hitDamage);
+            AudioManager.Play(AudioManager.Sfx.ProjectileHit);
             EffectSpawner.SpawnHit(hitEffect, col, transform.position, Vector2.right);
             Destroy(gameObject);
         }

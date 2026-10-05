@@ -59,6 +59,7 @@ public class LaneSpawner : MonoBehaviour
 
     void Update()
     {
+        if (WaveManager.Instance != null && WaveManager.Instance.IsBossWave(WaveManager.Instance.currentWave)) return;
         spawnTimer += Time.deltaTime;
         if (spawnTimer >= GetCurrentSpawnDelay() && HasSpacing())
         {

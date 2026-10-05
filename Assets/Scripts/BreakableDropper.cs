@@ -6,6 +6,9 @@ public class BreakableDropper : MonoBehaviour
 
     [HideInInspector] public Rarity rarity = Rarity.Regular;
     public int hitsToBreak = 3;
+    public float healthPerWave = 0.25f;
+    public float shinyHealthMultiplier = 1.5f;
+    public float rainbowHealthMultiplier = 2.5f;
     public float contactDamage = 20f;
     public float lifetime = 20f;
     public GameObject dropPrefab;
@@ -14,9 +17,20 @@ public class BreakableDropper : MonoBehaviour
     public GameObject stardustPrefab;
     public int minStardust = 3;
     public int maxStardust = 6;
+    public GameObject crateDropPrefab;
+    [Range(0f, 1f)] public float crateDropChance = 0.1f;
+    public float shinyCrateMultiplier = 2f;
+    public float rainbowCrateMultiplier = 3f;
     public bool randomizeScale = true;
     public float minScale = 1f;
     public float maxScale = 2f;
+
+    public float hitShakeDuration = 0.15f;
+    public float hitShakeAmount = 0.08f;
+
+    private float health;
+    private float shakeTimer;
+    private Vector3 shakeOffset;
 
     void Awake()
     {
@@ -29,12 +43,29 @@ public class BreakableDropper : MonoBehaviour
     void Start()
     {
         Destroy(gameObject, lifetime);
+        int wave = WaveManager.Instance != null ? WaveManager.Instance.currentWave : 1;
+        float rarityMultiplier = rarity == Rarity.Rainbow ? rainbowHealthMultiplier : rarity == Rarity.Shiny ? shinyHealthMultiplier : 1f;
+        health = hitsToBreak * (1f + (wave - 1) * healthPerWave) * rarityMultiplier;
     }
 
-    public void TakeHit(int damage)
+    void LateUpdate()
     {
-        hitsToBreak -= damage;
-        if (hitsToBreak <= 0)
+        transform.position -= shakeOffset;
+        shakeOffset = Vector3.zero;
+        if (shakeTimer <= 0f) return;
+        shakeTimer -= Time.deltaTime;
+        if (GameSettings.ScreenShake && hitShakeDuration > 0f)
+        {
+            shakeOffset = (Vector3)(Random.insideUnitCircle * hitShakeAmount * Mathf.Clamp01(shakeTimer / hitShakeDuration));
+        }
+        transform.position += shakeOffset;
+    }
+
+    public void TakeHit(float damage)
+    {
+        shakeTimer = hitShakeDuration;
+        health -= damage;
+        if (health <= 0f)
         {
             Break();
         }
@@ -53,6 +84,7 @@ public class BreakableDropper : MonoBehaviour
     void Break()
     {
         if (WaveManager.Instance != null) WaveManager.Instance.AddKill();
+        AudioManager.Play(AudioManager.Sfx.AsteroidExplode);
 
         if (stardustPrefab != null)
         {
@@ -69,6 +101,22 @@ public class BreakableDropper : MonoBehaviour
         if (dropPrefab != null)
         {
             Instantiate(dropPrefab, transform.position, Quaternion.identity);
+        }
+        if (crateDropPrefab != null && Random.value < crateDropChance)
+        {
+            GameObject crate = Instantiate(crateDropPrefab, transform.position, Quaternion.identity);
+            ResourcePickup pickup = crate.GetComponent<ResourcePickup>();
+            if (rarity == Rarity.Rainbow)
+            {
+                if (pickup != null) pickup.amountMultiplier = rainbowCrateMultiplier;
+                crate.AddComponent<RainbowTint>();
+            }
+            else if (rarity == Rarity.Shiny)
+            {
+                if (pickup != null) pickup.amountMultiplier = shinyCrateMultiplier;
+                SpriteRenderer ownSr = GetComponentInChildren<SpriteRenderer>();
+                if (ownSr != null) EffectSpawner.Tint(crate, ownSr.color);
+            }
         }
         if (breakEffect != null)
         {

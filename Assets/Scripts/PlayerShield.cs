@@ -6,9 +6,21 @@ public class PlayerShield : MonoBehaviour
     public float currentShield = 50f;
     public SpriteRenderer shieldBubble;
     public float maxBubbleAlpha = 0.6f;
+    public float shieldPerUpgrade = 5f;
+
+    private int appliedLevel;
 
     void Start()
     {
+        ApplyUpgrades();
+    }
+
+    public void ApplyUpgrades()
+    {
+        float gain = (SaveSystem.Data.shieldLevel - appliedLevel) * shieldPerUpgrade;
+        appliedLevel = SaveSystem.Data.shieldLevel;
+        maxShield += gain;
+        currentShield += gain;
         UpdateBubble();
     }
 

@@ -70,7 +70,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 7
   turnSpeed: 200
-  damage: 1
+  damage: 5
   missChance: 0.25
   missOffset: 1.5
   lifetime: 6

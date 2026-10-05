@@ -111,7 +111,7 @@ public class WaveTrackerUI : MonoBehaviour
         {
             int wave = displayedWave - visibleBehind + i;
             float slot = (wave - displayedWave) - wm.waveProgress;
-            UpdateIcon(icons[i], wave, slot, wm.IsBossWave(wave), wave == displayedWave ? pulse : 1f);
+            UpdateIcon(icons[i], wave, wave <= wm.FinalWave, slot, wm.IsBossWave(wave), wave == displayedWave ? pulse : 1f);
         }
 
         icons.Sort((a, b) => a.rect.localScale.x.CompareTo(b.rect.localScale.x));
@@ -139,9 +139,9 @@ public class WaveTrackerUI : MonoBehaviour
         return extent > 0f ? Mathf.Min(spacing, halfWidth / extent) : spacing;
     }
 
-    void UpdateIcon(Icon icon, int wave, float slot, bool isBoss, float pulse)
+    void UpdateIcon(Icon icon, int wave, bool inLevel, float slot, bool isBoss, float pulse)
     {
-        bool valid = wave >= 1;
+        bool valid = wave >= 1 && inLevel;
         icon.rect.gameObject.SetActive(valid);
         if (!valid) return;
 

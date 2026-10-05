@@ -2,6 +2,24 @@ using UnityEngine;
 
 public static class EffectSpawner
 {
+    public static void Tint(GameObject obj, Color color)
+    {
+        foreach (SpriteRenderer sr in obj.GetComponentsInChildren<SpriteRenderer>())
+        {
+            sr.color = new Color(color.r, color.g, color.b, sr.color.a * color.a);
+        }
+        foreach (TrailRenderer trail in obj.GetComponentsInChildren<TrailRenderer>())
+        {
+            trail.startColor = new Color(color.r, color.g, color.b, trail.startColor.a);
+            trail.endColor = new Color(color.r, color.g, color.b, trail.endColor.a);
+        }
+        foreach (ParticleSystem ps in obj.GetComponentsInChildren<ParticleSystem>())
+        {
+            ParticleSystem.MainModule main = ps.main;
+            main.startColor = color;
+        }
+    }
+
     public static void SpawnHit(GameObject prefab, Collider2D hitCollider, Vector3 hitterPosition, Vector2 travelDirection)
     {
         if (prefab == null || hitCollider == null) return;

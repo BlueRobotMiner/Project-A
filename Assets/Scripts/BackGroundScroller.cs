@@ -8,8 +8,15 @@ public class BackGroundScroller : MonoBehaviour
     public Rigidbody2D rb;
     public float scrollSpeed = -2f;
     public static float SpeedMultiplier = 1f;
+    public Sprite[] galaxySprites;
+    public float galaxyChangeInterval = 0f;
+    public float galaxyFadeDuration = 2f;
     private float width;
     private Camera cam;
+    private SpriteRenderer sr;
+    private SpriteRenderer fadeRenderer;
+    private int galaxyIndex;
+    private float fadeT;
 
     void Start()
     {
@@ -17,12 +24,50 @@ public class BackGroundScroller : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         cam = Camera.main;
 
-        width = GetComponent<SpriteRenderer>().bounds.size.x;
+        sr = GetComponent<SpriteRenderer>();
+        if (galaxySprites != null && galaxySprites.Length > 0 && galaxySprites[0] != null) sr.sprite = galaxySprites[0];
+        width = sr.bounds.size.x;
         Collider.enabled = false;
+    }
+
+    void UpdateGalaxy()
+    {
+        if (fadeRenderer != null)
+        {
+            fadeT += Time.deltaTime / Mathf.Max(0.01f, galaxyFadeDuration);
+            Color c = fadeRenderer.color;
+            c.a = Mathf.Clamp01(fadeT);
+            fadeRenderer.color = c;
+            if (fadeT >= 1f)
+            {
+                sr.sprite = fadeRenderer.sprite;
+                Destroy(fadeRenderer.gameObject);
+                fadeRenderer = null;
+            }
+            return;
+        }
+
+        if (galaxySprites == null || galaxySprites.Length < 2 || galaxyChangeInterval <= 0f) return;
+        int index = Mathf.FloorToInt(Time.timeSinceLevelLoad / galaxyChangeInterval) % galaxySprites.Length;
+        if (index == galaxyIndex || galaxySprites[index] == null) return;
+        galaxyIndex = index;
+
+        GameObject go = new GameObject("Galaxy Fade");
+        go.transform.SetParent(transform, false);
+        fadeRenderer = go.AddComponent<SpriteRenderer>();
+        fadeRenderer.sprite = galaxySprites[index];
+        fadeRenderer.sortingLayerID = sr.sortingLayerID;
+        fadeRenderer.sortingOrder = sr.sortingOrder + 1;
+        fadeRenderer.drawMode = sr.drawMode;
+        if (sr.drawMode != SpriteDrawMode.Simple) fadeRenderer.size = sr.size;
+        fadeRenderer.color = new Color(sr.color.r, sr.color.g, sr.color.b, 0f);
+        fadeT = 0f;
     }
 
     void Update()
     {
+        UpdateGalaxy();
+
         // re-applied every frame so Inspector edits take effect live
         rb.velocity = new Vector2(scrollSpeed * SpeedMultiplier, 0);
 
