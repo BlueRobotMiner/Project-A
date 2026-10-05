@@ -1,0 +1,39 @@
+Rasterloom - 60 Free Game UI Icons: contents
+
+60 icons in 9 categories.
+
+01-interface - Interface & System (12)
+    play                  shuffle               music-note            sliders-vertical
+    plug                  download              close                 refresh
+    sort                  more-h                arrow-left            info
+
+02-combat - Combat, Weapons & Magic (8)
+    sword                 halberd               gun                   crosshair
+    shield-bolt           wand                  lightning             skull
+
+03-items - Items, Loot & Tools (8)
+    chest                 pouch                 coin-stack            banknote
+    bottle                key                   map                   hammer-tool
+
+04-crafting - Resources & Crafting (5)
+    wood-log              thread                crafting-table        smelt
+    dye
+
+05-stats - Stats & Status Effects (7)
+    heart                 stamina               strength              rank-badge
+    burning               silenced              aura
+
+06-world - World, Map & Nature (6)
+    compass               portal                crossroads            flower
+    fire                  storm
+
+07-social - Social & Progression (5)
+    user                  chat                  kick                  lobby
+    avatar
+
+08-input - Input & Controls (5)
+    keyboard              key-shift             keys-arrows           drag
+    dpad
+
+09-economy - Shop & Economy (4)
+    cart                  gift-box              daily-reward          buy
