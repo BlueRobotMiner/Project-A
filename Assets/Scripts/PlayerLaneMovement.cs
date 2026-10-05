@@ -1,6 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
+// PlayerLaneMovement
+// Moves the ship between fixed lanes with W/S or Up/Down, and controls the world scroll
+// speed: holding D boosts it, releasing eases back to normal. Also plays the level intro,
+// where the ship flies in from the left edge before controls unlock.
 using UnityEngine;
+using System.Collections.Generic;
 
 public class PlayerLaneMovement : MonoBehaviour
 {
@@ -24,6 +27,8 @@ public class PlayerLaneMovement : MonoBehaviour
     private float introEndX;
     private float introTime;
 
+    // Places the ship off the left edge of the screen so the intro can fly it in.
+    // With introDuration at 0 the ship just starts in its normal position.
     void Start()
     {
         BackGroundScroller.SpeedMultiplier = 1f;
@@ -52,6 +57,8 @@ public class PlayerLaneMovement : MonoBehaviour
         IntroPlaying = false;
     }
 
+    // Intro flight: eases the ship from off screen to its start position, then unlocks
+    // movement and shooting. Lane input is ignored until this finishes.
     void Update()
     {
         if (PauseMenu.IsPaused) return;
@@ -89,6 +96,8 @@ public class PlayerLaneMovement : MonoBehaviour
         transform.position = pos;
     }
 
+    // Reads A/D input and drives the shared scroll speed multipliers that the
+    // background, objects and spawner all use.
     void UpdateScrollSpeed()
     {
         if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))

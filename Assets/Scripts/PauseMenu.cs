@@ -1,3 +1,7 @@
+// PauseMenu
+// Escape toggles pause: freezes the game (timeScale 0), pauses audio, shows the pause
+// panel, and routes Shop/Settings to their panels. End Run returns to the menu scene
+// and Quit exits the game (hidden on WebGL, where quitting does nothing).
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -27,6 +31,7 @@ public class PauseMenu : MonoBehaviour
         SetPaused(false);
     }
 
+    // Escape toggles pause, unless the game over screen is up (no resuming a dead run).
     void Update()
     {
         if (GameOverMenu.IsGameOver || !Input.GetKeyDown(pauseKey)) return;
@@ -44,6 +49,7 @@ public class PauseMenu : MonoBehaviour
         SetPaused(false);
     }
 
+    // Central pause state: freezes/Unfreezes time and audio, and resets panels.
     void SetPaused(bool paused)
     {
         IsPaused = paused;

@@ -1,3 +1,6 @@
+// EnemyProjectile
+// A projectile fired by turrets and bosses. Travels in the direction it was aimed and
+// damages the player on contact. The shooter tints it (bosses use red by default).
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]

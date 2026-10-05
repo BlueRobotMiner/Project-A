@@ -1,3 +1,7 @@
+// WaveManager
+// Drives wave progression: distance from travel and kills fills the wave bar, and each
+// wave break pauses the spawner briefly. On a boss wave the spawner stops and the boss
+// prefab is spawned instead; the wave counter stays there until the boss dies.
 using UnityEngine;
 
 public class WaveManager : MonoBehaviour
@@ -34,6 +38,7 @@ public class WaveManager : MonoBehaviour
         Instance = this;
     }
 
+    // Progresses waves, or holds on the boss wave while the boss fight runs.
     void Update()
     {
         if (pauseTimer > 0f)
@@ -65,6 +70,7 @@ public class WaveManager : MonoBehaviour
         return bossEvery > 0 && wave % bossEvery == 0;
     }
 
+    // Spawns the boss just off the right edge and starts the boss music.
     void SpawnBoss()
     {
         bossSpawned = true;
@@ -76,6 +82,7 @@ public class WaveManager : MonoBehaviour
         Instantiate(bossPrefab, new Vector3(edge.x + bossSpawnOffsetX, edge.y, 0f), Quaternion.identity);
     }
 
+    // Adds travel distance and advances to the next wave when the bar fills.
     void AddDistance(float amount)
     {
         if (IsBossWave(currentWave)) return;

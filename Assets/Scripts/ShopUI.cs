@@ -1,3 +1,9 @@
+// ShopUI
+// The upgrade shop. Four rows (Hull, Shield, Firepower, Stardust), each with left/right
+// arrows: left refunds the last pending level, right buys one at an increasing cost.
+// Nothing is charged until Apply, which deducts stardust, saves, and applies hull/shield
+// upgrades immediately. Icons fill fractionally: 12 icons show 24 levels.
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -32,6 +38,8 @@ public class ShopUI : MonoBehaviour
     public int costIncrease = 50;
     [Range(0f, 1f)] public float pendingAlpha = 0.4f;
 
+    // Builds the fractional fill overlays over each icon (dim for pending, bright for
+    // owned) and wires up the arrows and apply button.
     void Awake()
     {
         foreach (UpgradeRow row in rows)
@@ -84,6 +92,7 @@ public class ShopUI : MonoBehaviour
         return img;
     }
 
+    // Cost of the next level for a row, scaling with levels already owned.
     int Cost(int level)
     {
         return baseCost + level * costIncrease;
@@ -113,6 +122,7 @@ public class ShopUI : MonoBehaviour
         }
     }
 
+    // Total cost of every pending level across all rows.
     int PendingTotal()
     {
         int total = 0;
@@ -130,6 +140,8 @@ public class ShopUI : MonoBehaviour
         return next < maxLevel && total + Cost(next) <= SaveSystem.Data.totalStardust;
     }
 
+    // Left arrow refunds one pending level; right arrow buys one if max level and
+    // the bank allow it. Nothing is spent until Apply.
     void Change(UpgradeRow r, int dir)
     {
         if (dir < 0 && r.pending > 0) r.pending--;
@@ -137,6 +149,8 @@ public class ShopUI : MonoBehaviour
         Refresh();
     }
 
+    // Charges the bank, saves the new levels, applies hull/shield to the live player,
+    // and clears pending. Pending changes are lost when the panel closes unapplied.
     void Apply()
     {
         int total = PendingTotal();
@@ -156,6 +170,7 @@ public class ShopUI : MonoBehaviour
         Refresh();
     }
 
+    // Refreshes icon fills, level/cost labels, arrow availability, bank and totals.
     void Refresh()
     {
         int total = PendingTotal();

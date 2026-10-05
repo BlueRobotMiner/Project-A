@@ -1,3 +1,7 @@
+// MainMenu
+// Main menu buttons: Play loads the first level, Shop/Settings/Credits open their
+// panels with Back returning here, and Quit exits (auto-hidden on WebGL, where
+// Application.Quit does nothing).
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -10,8 +14,10 @@ public class MainMenu : MonoBehaviour
     public Button shopButton;
     public Button settingsButton;
     public Button quitButton;
+    public Button creditsButton;
     public ShopUI shop;
     public SettingsUI settings;
+    public CreditsUI credits;
 
     void Awake()
     {
@@ -20,6 +26,8 @@ public class MainMenu : MonoBehaviour
         if (shopButton != null) shopButton.onClick.AddListener(() => OpenPanel(shop != null ? shop.gameObject : null));
         if (settingsButton != null) settingsButton.onClick.AddListener(() => OpenPanel(settings != null ? settings.gameObject : null));
         if (quitButton != null) quitButton.onClick.AddListener(Quit);
+        if (creditsButton != null) creditsButton.onClick.AddListener(() => OpenPanel(credits != null ? credits.gameObject : null));
+        if (credits != null) credits.returnPanel = menuPanel;
         if (shop != null) shop.returnPanel = menuPanel;
         if (settings != null) settings.returnPanel = menuPanel;
 #if UNITY_WEBGL && !UNITY_EDITOR

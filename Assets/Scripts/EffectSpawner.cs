@@ -1,7 +1,12 @@
+// EffectSpawner
+// Static helpers for spawning hit effects and applying colour tints to spawned objects.
+// Tint colours sprites, trails and particles at once, which is how bullets, crates and
+// the portal get their in-Inspector colours.
 using UnityEngine;
 
 public static class EffectSpawner
 {
+    // Recolours every sprite, trail and particle under an object, keeping their alpha.
     public static void Tint(GameObject obj, Color color)
     {
         foreach (SpriteRenderer sr in obj.GetComponentsInChildren<SpriteRenderer>())

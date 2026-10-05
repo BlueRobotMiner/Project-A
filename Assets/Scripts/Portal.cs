@@ -1,3 +1,7 @@
+// Portal
+// The portal the defeated boss leaves. Pulses between two colours with a slight shake,
+// then plays the level-end cutscene: disables player control, flies the ship into the
+// portal while shrinking it, and loads the level clear scene.
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -21,6 +25,8 @@ public class Portal : MonoBehaviour
         basePos = transform.position;
     }
 
+    // Colour pulse and shake. The shake follows the Screen Shake setting and is
+    // centred on basePos so the fly-in still targets the true centre.
     void Update()
     {
         float t = (Mathf.Sin(Time.time * colorCycleSpeed * Mathf.PI) + 1f) * 0.5f;
@@ -29,6 +35,8 @@ public class Portal : MonoBehaviour
         transform.position = basePos + (Vector3)(Random.insideUnitCircle * shake);
     }
 
+    // Level-end cutscene: strip control, fly the ship in while shrinking, then
+    // record the cleared level and load the level clear scene.
     IEnumerator Start()
     {
         AudioManager.Play(AudioManager.Sfx.Portal);

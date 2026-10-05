@@ -1,3 +1,7 @@
+// PlayerShield
+// The player's regenerating-style shield pool. Absorb() soaks up damage before the hull,
+// Recharge() refills it (shield pickups and crates), and ApplyBuff() raises max shield
+// temporarily. The bubble sprite's transparency shows how much shield is left.
 using UnityEngine;
 
 public class PlayerShield : MonoBehaviour
@@ -24,6 +28,7 @@ public class PlayerShield : MonoBehaviour
         UpdateBubble();
     }
 
+    // soaks up as much damage as the shield can cover and returns the rest for the hull.
     public float Absorb(float damage)
     {
         float absorbed = Mathf.Min(currentShield, damage);
@@ -32,12 +37,14 @@ public class PlayerShield : MonoBehaviour
         return damage - absorbed;
     }
 
+    // Refills shield up to max, without going over.
     public void Recharge(float amount)
     {
         currentShield = Mathf.Min(currentShield + amount, maxShield);
         UpdateBubble();
     }
 
+    // Temporarily raises max shield (shield-buff pickups), then removes the bonus later.
     public void ApplyBuff(float amount, float duration)
     {
         maxShield += amount;

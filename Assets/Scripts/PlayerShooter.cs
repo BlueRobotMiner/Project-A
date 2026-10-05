@@ -1,3 +1,7 @@
+// PlayerShooter
+// Fires the player's lasers from up to five fire points in sequence, and torpedoes on a
+// cooldown. Laser damage scales with the Firepower upgrade. Shooting is blocked while
+// paused, during the level intro, and during the boss entrance cutscene.
 using UnityEngine;
 
 public class PlayerShooter : MonoBehaviour
@@ -17,7 +21,7 @@ public class PlayerShooter : MonoBehaviour
 
     void Update()
     {
-        if (PauseMenu.IsPaused || PlayerLaneMovement.IntroPlaying) return;
+        if (PauseMenu.IsPaused || PlayerLaneMovement.IntroPlaying || BossIntroPlaying()) return;
         if ((Input.GetKeyDown(torpedoKey) || Input.GetMouseButtonDown(1)) && Time.time >= nextTorpedoTime)
         {
             FireTorpedo();
@@ -34,16 +38,29 @@ public class PlayerShooter : MonoBehaviour
         }
     }
 
+    // True while the boss wave has started but the boss hasn't reached its position yet,
+    // which locks player shooting so the entrance plays like a short cutscene.
+    bool BossIntroPlaying()
+    {
+        WaveManager wm = WaveManager.Instance;
+        if (wm == null || !wm.IsBossWave(wm.currentWave)) return false;
+        return Boss.Active == null || !Boss.Active.IsEngaged;
+    }
+
+    // Fires a torpedo from the torpedo point and ties its launch sound to the projectile,
+    // so the sound fades out if the torpedo is destroyed early.
     void FireTorpedo()
     {
         if (torpedoPrefab == null) return;
 
         nextTorpedoTime = Time.time + torpedoCooldown;
         Transform point = torpedoPoint != null ? torpedoPoint : transform;
-        Instantiate(torpedoPrefab, point.position, Quaternion.Euler(0f, 0f, -90f));
-        AudioManager.Play(AudioManager.Sfx.Torpedo);
+        GameObject torpedo = Instantiate(torpedoPrefab, point.position, Quaternion.Euler(0f, 0f, -90f));
+        Torpedo t = torpedo.GetComponent<Torpedo>();
+        if (t != null) t.launchSound = AudioManager.Play(AudioManager.Sfx.Torpedo);
     }
 
+    // Cycles through the fire points, skipping any empty slots.
     Transform GetNextFirePoint()
     {
         int count = Mathf.Min(firePoints.Length, 5);

@@ -1,3 +1,7 @@
+// GameOverMenu
+// The game over overlay: freezes the game behind it, offers Restart Level (reloads the
+// current scene) and Main Menu, plus Shop and Quit. Escape is blocked while it's up,
+// so a dead run can't be resumed.
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -33,6 +37,7 @@ public class GameOverMenu : MonoBehaviour
         if (gameOverPanel != null) gameOverPanel.SetActive(true);
     }
 
+    // Unfreezes time and reloads whatever level the player died in.
     void RestartLevel()
     {
         ClearState();

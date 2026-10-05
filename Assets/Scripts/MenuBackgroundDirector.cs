@@ -1,3 +1,7 @@
+// MenuBackgroundDirector
+// Main menu ambience. Every few seconds it either flies the player's ship across the
+// screen, or stages a short battle: both ships fly in, bob and trade tinted bullets,
+// then a random winner explodes the loser and flies off. All display-only prefabs.
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -37,6 +41,7 @@ public class MenuBackgroundDirector : MonoBehaviour
     private readonly List<Bullet> bullets = new List<Bullet>();
     private Camera cam;
 
+    // Event loop: wait a random interval, then run a battle or a flyby forever.
     IEnumerator Start()
     {
         cam = Camera.main;
@@ -74,6 +79,7 @@ public class MenuBackgroundDirector : MonoBehaviour
         Destroy(ship.gameObject);
     }
 
+    // The staged fight: fly in, trade fire for a while, explode the loser, exit winner.
     IEnumerator Battle()
     {
         Transform player = Spawn(playerShipPrefab, View(0f, 0.5f) + Vector3.left * 2f, playerFacingAngle);
@@ -122,6 +128,7 @@ public class MenuBackgroundDirector : MonoBehaviour
         Destroy(winner.gameObject);
     }
 
+    // Loser cutscene: shake, spin and pop explosions, then remove the ship.
     IEnumerator Explode(Transform ship)
     {
         Vector3 basePos = ship.position;
@@ -140,6 +147,7 @@ public class MenuBackgroundDirector : MonoBehaviour
         Destroy(ship.gameObject);
     }
 
+    // Fires a tinted bullet at the opposing ship and tracks it for hit/cleanup.
     void Fire(GameObject prefab, Transform from, Transform target, Color color)
     {
         if (prefab == null) return;

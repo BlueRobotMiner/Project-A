@@ -1,3 +1,8 @@
+// RainbowTint
+// Cycles a sprite through the full hue spectrum. Used on Rainbow-rarity asteroids and
+// the higher-level crates they drop.
+// Source: included with the Rasterloom Free Icon Sampler asset pack (freeicon sampler
+// demo scripts); comments added for this project.
 using UnityEngine;
 
 public class RainbowTint : MonoBehaviour

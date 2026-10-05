@@ -1,3 +1,7 @@
+// Projectile
+// The player's laser. Flies straight, despawns off screen, and damages asteroids,
+// crates, turrets and the boss on contact. Damage scales with the Firepower upgrade.
+// The shooter tints it (green by default) when firing.
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]

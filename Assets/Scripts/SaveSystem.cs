@@ -1,3 +1,7 @@
+// SaveSystem
+// Holds all persistent progress (stardust, upgrade levels) as one serializable data object.
+// Saves to a JSON file on desktop/editor, and to PlayerPrefs in WebGL builds so it
+// persists in the browser. Other scripts read SaveSystem.Data and call Save().
 using System.IO;
 using UnityEngine;
 
@@ -31,9 +35,13 @@ public static class SaveSystem
 
     private const string SaveKey = "save";
 
+    // Loads the save once per session; every later read uses the cached data object.
     public static void Load()
     {
         data = null;
+        // WebGL: file writes to persistentDataPath are unreliable in the browser and the
+        // folder can change between builds, so the save is kept in PlayerPrefs instead.
+        // This branch was written with AI assistance (Claude, Anthropic).
 #if UNITY_WEBGL && !UNITY_EDITOR
         if (PlayerPrefs.HasKey(SaveKey))
         {
@@ -62,6 +70,7 @@ public static class SaveSystem
         if (data == null) data = new SaveData();
     }
 
+    // Writes through PlayerPrefs in WebGL, or an atomic temp-file swap on desktop.
     public static void Save()
     {
 #if UNITY_WEBGL && !UNITY_EDITOR

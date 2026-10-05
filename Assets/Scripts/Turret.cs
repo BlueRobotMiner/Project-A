@@ -1,3 +1,7 @@
+// Turret
+// A wall turret on the right of the screen. Aims its barrel at the player and fires
+// enemy projectiles on a timer. Scrolls left with the world and destroys itself once
+// it is well off screen.
 using UnityEngine;
 
 public class Turret : MonoBehaviour
@@ -24,6 +28,7 @@ public class Turret : MonoBehaviour
         nextFireTime = Time.time + fireRate;
     }
 
+    // Aims at the player, fires while on screen, and cleans itself up once scrolled past.
     void Update()
     {
         float dist = Mathf.Abs(cam.transform.position.z - transform.position.z);

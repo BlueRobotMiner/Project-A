@@ -1,3 +1,7 @@
+// WaveTrackerUI
+// The wave tracker at the top: a row of wave number icons that scales and fades with
+// distance, pulses when a wave changes, uses the boss icon for boss waves, and stops
+// showing waves beyond the level's final (boss) wave.
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -77,6 +81,8 @@ public class WaveTrackerUI : MonoBehaviour
         return icon;
     }
 
+    // Updates the progress bar, tracks wave changes for the pulse, then lays out and
+    // depth-sorts every icon.
     void Update()
     {
         WaveManager wm = WaveManager.Instance;
@@ -139,6 +145,8 @@ public class WaveTrackerUI : MonoBehaviour
         return extent > 0f ? Mathf.Min(spacing, halfWidth / extent) : spacing;
     }
 
+    // Positions one icon: off-screen and faded near the edges, boss styling for boss
+    // waves, and hidden entirely once past the final wave.
     void UpdateIcon(Icon icon, int wave, bool inLevel, float slot, bool isBoss, float pulse)
     {
         bool valid = wave >= 1 && inLevel;

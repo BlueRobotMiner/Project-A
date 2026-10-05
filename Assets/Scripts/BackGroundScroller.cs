@@ -1,5 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+// BackGroundScroller
+// The repeating background tiles. Scrolls left and wraps to the right edge once fully
+// off screen. Can also cross-fade between galaxy sprites on a timer so the level
+// appears to travel into a different galaxy.
 using UnityEngine;
 
 public class BackGroundScroller : MonoBehaviour
@@ -30,6 +34,8 @@ public class BackGroundScroller : MonoBehaviour
         Collider.enabled = false;
     }
 
+    // Cross-fades to the next galaxy sprite: a fading copy is drawn on top, and when
+    // it finishes the base sprite is swapped and the copy is removed.
     void UpdateGalaxy()
     {
         if (fadeRenderer != null)

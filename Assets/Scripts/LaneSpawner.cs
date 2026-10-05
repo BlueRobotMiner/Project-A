@@ -1,3 +1,7 @@
+// LaneSpawner
+// Spawns asteroids, turrets and (optionally) crates into the lanes. Spawn delay and
+// spacing tighten as scroll speed rises, asteroids roll for Shiny/Rainbow rarity,
+// and everything stops during boss waves.
 using UnityEngine;
 
 public class LaneSpawner : MonoBehaviour
@@ -114,6 +118,7 @@ public class LaneSpawner : MonoBehaviour
         return list[Random.Range(0, list.Length)];
     }
 
+    // Rolls rarity for a spawned asteroid: Rainbow first, then Shiny, then normal.
     void ApplyRarity(GameObject obj)
     {
         float roll = Random.value;
@@ -152,6 +157,7 @@ public class LaneSpawner : MonoBehaviour
         Instantiate(prefab, spawnPos, Quaternion.identity);
     }
 
+    // Spawns one object (or a small cluster) into valid lanes, respecting spacing.
     void Spawn()
     {
         int count = 1;

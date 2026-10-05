@@ -1,3 +1,7 @@
+// ObjectScroller
+// Moves any object left with the world and destroys it once it is past the left edge.
+// The static SpeedMultiplier is driven by the player's speed boost so everything in
+// the world speeds up together.
 using UnityEngine;
 
 public class ObjectScroller : MonoBehaviour

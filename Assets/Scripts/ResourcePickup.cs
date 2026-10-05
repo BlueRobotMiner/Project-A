@@ -1,3 +1,7 @@
+// ResourcePickup
+// A collectible that flies to the player and applies an effect on touch. Used for the
+// supply crates: type SupplyCrate opens into a hull repair or a shield recharge (never
+// wasted on the full stat). Rarity asteroids drop stronger crates via amountMultiplier.
 using UnityEngine;
 
 public class ResourcePickup : MonoBehaviour
@@ -24,6 +28,7 @@ public class ResourcePickup : MonoBehaviour
         Destroy(gameObject, lifetime);
     }
 
+    // Magnet flight to the player, or drift with the world when the player is gone.
     void Update()
     {
         if (player != null && player.gameObject.activeInHierarchy)
@@ -36,6 +41,7 @@ public class ResourcePickup : MonoBehaviour
         }
     }
 
+    // Applies the pickup effect based on type, then removes the crate.
     void OnTriggerEnter2D(Collider2D col)
     {
         if (col.GetComponent<PlayerHealth>() == null) return;
@@ -64,6 +70,8 @@ public class ResourcePickup : MonoBehaviour
         Destroy(gameObject);
     }
 
+    // Chooses repair or shield: if exactly one of the two is full, it picks the other,
+    // otherwise a 50/50 roll. The crate's rarity multiplier scales the amount.
     void OpenCrate(PlayerHealth health, PlayerShield shield)
     {
         bool healthFull = health == null || health.currentHealth >= health.maxHealth;

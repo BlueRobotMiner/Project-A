@@ -1,3 +1,7 @@
+// StardustPickup
+// A stardust collectible. Scatters when spawned, then drifts left; when the player gets
+// close it magnetises to the ship and flies in. All pieces from one asteroid share a
+// Group so the pickup sound plays once per asteroid, not per piece.
 using UnityEngine;
 
 public class StardustPickup : MonoBehaviour
@@ -14,6 +18,13 @@ public class StardustPickup : MonoBehaviour
     public float magnetSpeed = 8f;
     public float lifetime = 20f;
     public float collectDuration = 0.25f;
+
+    public class Group
+    {
+        public bool soundPlayed;
+    }
+
+    [HideInInspector] public Group group;
 
     private bool collecting;
     private float collectT;
@@ -44,6 +55,7 @@ public class StardustPickup : MonoBehaviour
         Destroy(gameObject, lifetime);
     }
 
+    // Scatter, bob, spin, magnet flight and off screen cleanup.
     void Update()
     {
         float dt = Time.deltaTime;
@@ -59,6 +71,11 @@ public class StardustPickup : MonoBehaviour
             if (!magnetized && (player.position - basePos).sqrMagnitude < magnetRadius * magnetRadius)
             {
                 magnetized = true;
+                if (group == null || !group.soundPlayed)
+                {
+                    if (group != null) group.soundPlayed = true;
+                    AudioManager.Play(AudioManager.Sfx.StardustPickup);
+                }
             }
             if (magnetized)
             {
@@ -117,11 +134,7 @@ public class StardustPickup : MonoBehaviour
 
         if (t >= 1f)
         {
-            if (collector != null && collector.isActiveAndEnabled)
-            {
-                collector.Add(amount);
-                AudioManager.Play(AudioManager.Sfx.StardustPickup);
-            }
+            if (collector != null && collector.isActiveAndEnabled) collector.Add(amount);
             Destroy(gameObject);
         }
     }

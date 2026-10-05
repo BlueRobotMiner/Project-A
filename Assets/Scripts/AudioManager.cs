@@ -1,3 +1,9 @@
+// AudioManager
+// Singleton that carries music and sound effects between scenes (DontDestroyOnLoad).
+// Music: per-scene SceneMusic tracks, or the built-in level rotation, with boss music
+// overriding during boss fights. SFX: a voice pool with per-sound volume, random clip
+// variation, anti-spam limits, and optional max duration with a quick fade out.
+// Every button and toggle in each scene is hooked up to a UI click automatically.
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,6 +27,8 @@ public class AudioManager : MonoBehaviour
         public float pitchVariance = 0.05f;
         public float minInterval = 0.05f;
         public int maxSimultaneous = 3;
+        public float maxDuration = 0f;
+        public float fadeOutTime = 0.1f;
     }
 
     public static AudioManager Instance;
@@ -37,6 +45,11 @@ public class AudioManager : MonoBehaviour
     private AudioSource[] voices;
     private Sfx[] voiceIds;
     private float[] voiceStart;
+    private int[] voiceTokens;
+    private float[] voiceBaseVolume;
+    private float[] voiceFadeStart;
+    private float[] voiceFadeTime;
+    private int tokenCounter;
     private readonly Dictionary<Sfx, SfxEntry> lookup = new Dictionary<Sfx, SfxEntry>();
     private readonly Dictionary<Sfx, float> lastPlayed = new Dictionary<Sfx, float>();
     private AudioClip[] sceneTracks;
@@ -46,6 +59,8 @@ public class AudioManager : MonoBehaviour
     private float fadeVolume = 1f;
     private Coroutine fadeRoutine;
 
+    // First instance keeps itself alive across scenes; later copies (from the scene's
+    // prefab copy) remove themselves. Sets up music/UI/voice sources and the sound lookup.
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -65,6 +80,10 @@ public class AudioManager : MonoBehaviour
         voices = new AudioSource[Mathf.Max(1, sfxVoices)];
         voiceIds = new Sfx[voices.Length];
         voiceStart = new float[voices.Length];
+        voiceTokens = new int[voices.Length];
+        voiceBaseVolume = new float[voices.Length];
+        voiceFadeStart = new float[voices.Length];
+        voiceFadeTime = new float[voices.Length];
         for (int i = 0; i < voices.Length; i++)
         {
             voices[i] = gameObject.AddComponent<AudioSource>();
@@ -81,6 +100,9 @@ public class AudioManager : MonoBehaviour
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
+    // Per scene: wires click sounds onto every button/toggle, then decides whether to
+    // start this scene's music. The level rotation continues across level changes and
+    // restarts unless boss music is playing or the tracks actually change.
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         foreach (Button b in FindObjectsOfType<Button>(true)) b.onClick.AddListener(() => PlayUI(Sfx.UIClick));
@@ -101,12 +123,49 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    // Applies the music volume slider every frame, auto-advances the level rotation
+    // when a track ends, and processes any sound fades.
     void Update()
     {
         musicSource.volume = GameSettings.MusicVolume * fadeVolume;
         if (!bossPlaying && fadeRoutine == null && !musicSource.isPlaying && sceneTracks != null && sceneTracks.Length > 0) NextTrack();
+        UpdateVoiceFades();
     }
 
+    // Applies running fades to voices that hit their max duration.
+    void UpdateVoiceFades()
+    {
+        float now = Time.unscaledTime;
+        for (int i = 0; i < voices.Length; i++)
+        {
+            if (!voices[i].isPlaying || now < voiceFadeStart[i]) continue;
+            float k = voiceFadeTime[i] > 0f ? 1f - (now - voiceFadeStart[i]) / voiceFadeTime[i] : 0f;
+            if (k <= 0f)
+            {
+                voices[i].Stop();
+                voiceFadeStart[i] = float.MaxValue;
+            }
+            else voices[i].volume = voiceBaseVolume[i] * k;
+        }
+    }
+
+    // Fades a playing sound out over 'time' seconds. Handle comes from Play().
+    public static void FadeOut(int handle, float time = 0.1f)
+    {
+        if (Instance == null || handle <= 0) return;
+        for (int i = 0; i < Instance.voices.Length; i++)
+        {
+            if (Instance.voiceTokens[i] != handle || !Instance.voices[i].isPlaying) continue;
+            if (Time.unscaledTime < Instance.voiceFadeStart[i])
+            {
+                Instance.voiceFadeStart[i] = Time.unscaledTime;
+                Instance.voiceFadeTime[i] = time;
+            }
+            return;
+        }
+    }
+
+    // Picks the next rotation track: random but never the same track twice in a row.
     void NextTrack()
     {
         if (shuffle && trackIndex < 0) trackIndex = Random.Range(0, sceneTracks.Length);
@@ -125,6 +184,7 @@ public class AudioManager : MonoBehaviour
         fadeRoutine = StartCoroutine(FadeTo(clip, loop));
     }
 
+    // Fades the current music out, swaps the clip, and fades back in.
     IEnumerator FadeTo(AudioClip clip, bool loop)
     {
         if (musicSource.isPlaying)
@@ -148,6 +208,8 @@ public class AudioManager : MonoBehaviour
         fadeRoutine = null;
     }
 
+    // Boss music hooks: the fight starts it looping, and the boss's death returns
+    // to the level rotation.
     public static void PlayBossMusic()
     {
         if (Instance == null || Instance.bossMusic == null) return;
@@ -163,9 +225,9 @@ public class AudioManager : MonoBehaviour
         else Instance.SwitchMusic(null, false);
     }
 
-    public static void Play(Sfx id)
+    public static int Play(Sfx id)
     {
-        if (Instance != null) Instance.PlaySfx(id, false);
+        return Instance != null ? Instance.PlaySfx(id, false) : -1;
     }
 
     public static void PlayUI(Sfx id)
@@ -173,6 +235,9 @@ public class AudioManager : MonoBehaviour
         if (Instance != null) Instance.PlaySfx(id, true);
     }
 
+    // Chooses a free voice, or the oldest of this sound's plays if the per-sound
+    // simultaneous cap is hit, or the oldest voice overall as a last resort. Keeps
+    // spamming input from stacking sounds or cutting newer ones off.
     int PickVoice(Sfx id, int maxSame)
     {
         int sameCount = 0;
@@ -195,30 +260,37 @@ public class AudioManager : MonoBehaviour
         return free >= 0 ? free : oldestAny;
     }
 
-    void PlaySfx(Sfx id, bool ui)
+    // Plays a sound if it passes the anti-spam interval. Returns a handle for FadeOut,
+    // or -1 when nothing played. UI sounds go through a dedicated always-audible source.
+    int PlaySfx(Sfx id, bool ui)
     {
         SfxEntry e;
-        if (!lookup.TryGetValue(id, out e) || e.clips == null || e.clips.Length == 0) return;
+        if (!lookup.TryGetValue(id, out e) || e.clips == null || e.clips.Length == 0) return -1;
         float last;
-        if (lastPlayed.TryGetValue(id, out last) && Time.unscaledTime - last < e.minInterval) return;
+        if (lastPlayed.TryGetValue(id, out last) && Time.unscaledTime - last < e.minInterval) return -1;
         lastPlayed[id] = Time.unscaledTime;
 
         AudioClip clip = e.clips[Random.Range(0, e.clips.Length)];
-        if (clip == null) return;
+        if (clip == null) return -1;
         float volume = e.volume * GameSettings.SfxVolume;
         if (ui)
         {
             uiSource.PlayOneShot(clip, volume);
-            return;
+            return -1;
         }
         int index = PickVoice(id, Mathf.Max(1, e.maxSimultaneous));
         voiceIds[index] = id;
         voiceStart[index] = Time.unscaledTime;
+        voiceTokens[index] = ++tokenCounter;
+        voiceBaseVolume[index] = volume;
+        voiceFadeStart[index] = e.maxDuration > 0f ? Time.unscaledTime + e.maxDuration : float.MaxValue;
+        voiceFadeTime[index] = e.fadeOutTime;
         AudioSource src = voices[index];
         src.Stop();
         src.clip = clip;
         src.volume = volume;
         src.pitch = 1f + Random.Range(-e.pitchVariance, e.pitchVariance);
         src.Play();
+        return voiceTokens[index];
     }
 }

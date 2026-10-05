@@ -1,3 +1,7 @@
+// HUDController
+// In-game HUD: smooths the hull/shield/boss bars, shows health and shield numbers,
+// the current speed, and the stardust count. The boss panel only shows while a boss
+// is alive.
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -30,6 +34,7 @@ public class HUDController : MonoBehaviour
         if (bossPanel != null) bossPanel.SetActive(false);
     }
 
+    // Updates every HUD element from the live player and boss state.
     void Update()
     {
         if (playerHealth != null)
@@ -64,6 +69,7 @@ public class HUDController : MonoBehaviour
         slider.maxValue = 1f;
     }
 
+    // Smooths a bar toward its target fraction and writes its "cur/max" label.
     void UpdateBar(Slider slider, TMP_Text label, float current, float max)
     {
         float target = max > 0f ? current / max : 0f;

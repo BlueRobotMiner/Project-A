@@ -1,3 +1,7 @@
+// LevelClearMenu
+// The level clear screen. Continue advances through the level list in order; after the
+// last level it either shows the demo-complete title (hiding Continue) or, with
+// endlessAfterLastLevel, loads a random level. Shop/Settings reuse the existing panels.
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -32,6 +36,8 @@ public class LevelClearMenu : MonoBehaviour
         Time.timeScale = 1f;
     }
 
+    // Demo complete state: swaps the title and hides Continue on the final level
+    // (unless endless mode is on).
     void Start()
     {
         bool demoDone = !endlessAfterLastLevel && LastLevelIndex() >= levelScenes.Length - 1;
@@ -47,6 +53,7 @@ public class LevelClearMenu : MonoBehaviour
         return System.Array.IndexOf(levelScenes, LastLevel);
     }
 
+    // Loads the next level in order, or a random one in endless mode.
     void Continue()
     {
         if (levelScenes == null || levelScenes.Length == 0) return;

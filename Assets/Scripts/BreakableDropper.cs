@@ -1,3 +1,8 @@
+// BreakableDropper
+// Health for asteroids, crates and similar breakables. Health scales with the current
+// wave and with rarity (Shiny/Rainbow are tougher). Breaking it shakes the sprite,
+// plays a sound, and drops stardust (grouped so one pickup sound plays per asteroid),
+// a crate at random, and the rarity's special drop.
 using UnityEngine;
 
 public class BreakableDropper : MonoBehaviour
@@ -40,6 +45,7 @@ public class BreakableDropper : MonoBehaviour
         }
     }
 
+    // Sets the scaled health from hitsToBreak, wave difficulty and rarity.
     void Start()
     {
         Destroy(gameObject, lifetime);
@@ -48,6 +54,8 @@ public class BreakableDropper : MonoBehaviour
         health = hitsToBreak * (1f + (wave - 1) * healthPerWave) * rarityMultiplier;
     }
 
+    // Shakes the sprite when hit. The offset is applied and removed here so it never
+    // affects the ObjectScroller movement.
     void LateUpdate()
     {
         transform.position -= shakeOffset;
@@ -61,6 +69,7 @@ public class BreakableDropper : MonoBehaviour
         transform.position += shakeOffset;
     }
 
+    // Applies damage and breaks the object when its health runs out.
     public void TakeHit(float damage)
     {
         shakeTimer = hitShakeDuration;
@@ -81,6 +90,8 @@ public class BreakableDropper : MonoBehaviour
         }
     }
 
+    // Drops stardust (sharing one pickup-sound group), a random crate, the rarity
+    // drop, and a break effect, then removes the object.
     void Break()
     {
         if (WaveManager.Instance != null) WaveManager.Instance.AddKill();
@@ -90,12 +101,14 @@ public class BreakableDropper : MonoBehaviour
         {
             ObjectScroller ownScroller = GetComponent<ObjectScroller>();
             int count = Random.Range(minStardust, maxStardust + 1);
+            StardustPickup.Group group = new StardustPickup.Group();
             for (int i = 0; i < count; i++)
             {
                 Vector3 pos = transform.position + (Vector3)(Random.insideUnitCircle * 0.2f);
                 GameObject dust = Instantiate(stardustPrefab, pos, Quaternion.identity);
                 StardustPickup pickup = dust.GetComponent<StardustPickup>();
                 if (pickup != null && ownScroller != null) pickup.scrollSpeed = ownScroller.scrollSpeed;
+                if (pickup != null) pickup.group = group;
             }
         }
         if (dropPrefab != null)

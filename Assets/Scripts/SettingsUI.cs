@@ -1,3 +1,7 @@
+// SettingsUI
+// The settings panel UI. Sliders for music/SFX, fullscreen toggle, Low/High quality
+// arrows, screen shake and auto-fire toggles. Values load from GameSettings when the
+// panel opens and save the moment they change. Back returns to the previous panel.
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -29,6 +33,7 @@ public class SettingsUI : MonoBehaviour
         if (backButton != null) backButton.onClick.AddListener(Back);
     }
 
+    // Pushes the current saved values into the controls when the panel opens.
     void OnEnable()
     {
         if (musicSlider != null) musicSlider.SetValueWithoutNotify(GameSettings.MusicVolume);

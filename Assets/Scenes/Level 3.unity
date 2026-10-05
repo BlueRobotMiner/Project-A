@@ -3258,7 +3258,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d08a8848e1e7f67488837296a3dd6eea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentWave: 1
+  currentWave: 21
   bossEvery: 10
   distancePerWave: 300
   baseTravelSpeed: 10
@@ -9035,6 +9035,9 @@ MonoBehaviour:
   Collider: {fileID: 0}
   rb: {fileID: 0}
   scrollSpeed: -1
+  galaxySprites: []
+  galaxyChangeInterval: 0
+  galaxyFadeDuration: 2
 --- !u!212 &701065246
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -9076,7 +9079,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: ddcac1fac1f5c8943a30c2ef6b724062, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 35313af049b4a2f42a0325330c51d74a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -13355,7 +13358,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -760.66504, y: 371.21976}
+  m_AnchoredPosition: {x: -760.6651, y: 371.21976}
   m_SizeDelta: {x: -1557.3298, y: -772.4404}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &985513081
@@ -14251,6 +14254,9 @@ MonoBehaviour:
   Collider: {fileID: 0}
   rb: {fileID: 0}
   scrollSpeed: -15
+  galaxySprites: []
+  galaxyChangeInterval: 0
+  galaxyFadeDuration: 2
 --- !u!61 &1034617562
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -15354,6 +15360,9 @@ MonoBehaviour:
   Collider: {fileID: 0}
   rb: {fileID: 0}
   scrollSpeed: -12
+  galaxySprites: []
+  galaxyChangeInterval: 0
+  galaxyFadeDuration: 2
 --- !u!61 &1112981829
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -16908,6 +16917,9 @@ MonoBehaviour:
   Collider: {fileID: 0}
   rb: {fileID: 0}
   scrollSpeed: -6
+  galaxySprites: []
+  galaxyChangeInterval: 0
+  galaxyFadeDuration: 2
 --- !u!61 &1169322683
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -17148,6 +17160,7 @@ MonoBehaviour:
   - {fileID: 38097375}
   - {fileID: 991167052}
   fireRate: 0.25
+  projectileColor: {r: 0, g: 1, b: 0, a: 1}
   torpedoPrefab: {fileID: 3597625125074970755, guid: 2ef29f96014ca1b4bb26af35459bfd96, type: 3}
   torpedoPoint: {fileID: 1906828540}
   torpedoCooldown: 1.5
@@ -17191,6 +17204,7 @@ MonoBehaviour:
   deathExplosions: 3
   deathDuration: 1
   deathScale: 2
+  deathSpinSpeed: 120
   hudToHide:
   - {fileID: 175260248}
   hudFadeTime: 0.4
@@ -17561,6 +17575,9 @@ MonoBehaviour:
   Collider: {fileID: 0}
   rb: {fileID: 0}
   scrollSpeed: -3
+  galaxySprites: []
+  galaxyChangeInterval: 0
+  galaxyFadeDuration: 2
 --- !u!61 &1247518430
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -19764,6 +19781,9 @@ MonoBehaviour:
   Collider: {fileID: 0}
   rb: {fileID: 0}
   scrollSpeed: -15
+  galaxySprites: []
+  galaxyChangeInterval: 0
+  galaxyFadeDuration: 2
 --- !u!61 &1362263587
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -20426,6 +20446,9 @@ MonoBehaviour:
   Collider: {fileID: 0}
   rb: {fileID: 0}
   scrollSpeed: -6
+  galaxySprites: []
+  galaxyChangeInterval: 0
+  galaxyFadeDuration: 2
 --- !u!61 &1399868344
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -20757,6 +20780,9 @@ MonoBehaviour:
   Collider: {fileID: 0}
   rb: {fileID: 0}
   scrollSpeed: -3
+  galaxySprites: []
+  galaxyChangeInterval: 0
+  galaxyFadeDuration: 2
 --- !u!61 &1414378240
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -22676,6 +22702,9 @@ MonoBehaviour:
   Collider: {fileID: 0}
   rb: {fileID: 0}
   scrollSpeed: -12
+  galaxySprites: []
+  galaxyChangeInterval: 0
+  galaxyFadeDuration: 2
 --- !u!61 &1550173316
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -26365,7 +26394,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: b4b46f397c9379144b897273484d1510, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 26634c500603917408e265331ca4f2e2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -26427,6 +26456,9 @@ MonoBehaviour:
   Collider: {fileID: 0}
   rb: {fileID: 0}
   scrollSpeed: -0.2
+  galaxySprites: []
+  galaxyChangeInterval: 0
+  galaxyFadeDuration: 2
 --- !u!61 &1827586263
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -31311,6 +31343,9 @@ MonoBehaviour:
   Collider: {fileID: 0}
   rb: {fileID: 0}
   scrollSpeed: -1
+  galaxySprites: []
+  galaxyChangeInterval: 0
+  galaxyFadeDuration: 2
 --- !u!212 &2136879846
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -31352,7 +31387,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: ddcac1fac1f5c8943a30c2ef6b724062, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 35313af049b4a2f42a0325330c51d74a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

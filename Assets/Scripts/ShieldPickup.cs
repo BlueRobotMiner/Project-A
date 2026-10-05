@@ -1,3 +1,6 @@
+// ShieldPickup
+// A standalone shield recharge pickup. Flies to the player and refills part of the
+// shield bar on contact.
 using UnityEngine;
 
 public class ShieldPickup : MonoBehaviour

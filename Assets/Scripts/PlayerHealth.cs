@@ -1,3 +1,8 @@
+// PlayerHealth
+// The player's hull health, damage handling and death sequence. Damage hits the shield
+// first (via PlayerShield), then the hull. Taking damage shakes the ship's visual child,
+// and losing all health plays a cutscene: the ship drifts to screen centre, grows, spins,
+// explodes, then the game over panel appears.
 using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
@@ -36,6 +41,8 @@ public class PlayerHealth : MonoBehaviour
         currentHealth = maxHealth;
     }
 
+    // Adds hull upgrade health gained since this object was last refreshed.
+    // Called on level start and again when buying upgrades from the shop.
     public void ApplyUpgrades()
     {
         float gain = (SaveSystem.Data.hullLevel - appliedLevel) * healthPerUpgrade;
@@ -44,12 +51,16 @@ public class PlayerHealth : MonoBehaviour
         currentHealth += gain;
     }
 
+    // Heals the hull, clamped to max. Used by repair crates.
     public void Heal(float amount)
     {
         if (dying) return;
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
     }
 
+    // Applies damage: the shield absorbs what it can, and different hit sounds play
+    // depending on whether the shield took it, an asteroid hit the hull, or an enemy
+    // laser hit the hull.
     public void TakeDamage(float damage, bool fromLaser = false)
     {
         if (dying) return;
@@ -71,6 +82,8 @@ public class PlayerHealth : MonoBehaviour
         Shake();
     }
 
+    // Death cutscene: locks controls, fades the HUD, glides the ship to the centre while
+    // growing, shaking, spinning and spawning explosions, then shows the game over panel.
     System.Collections.IEnumerator Die()
     {
         dying = true;
@@ -124,6 +137,7 @@ public class PlayerHealth : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+    // Fades the HUD canvas groups out during the death cutscene so it feels like a scene.
     void SetHudAlpha(float alpha)
     {
         if (hudToHide == null) return;
@@ -136,6 +150,7 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
+    // Spawns one explosion effect at a position and scale, and plays the ship explosion sound.
     void SpawnExplosion(Vector3 position, float scale)
     {
         AudioManager.Play(AudioManager.Sfx.ShipExplode);

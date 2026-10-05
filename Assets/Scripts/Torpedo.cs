@@ -1,3 +1,8 @@
+// Torpedo
+// The player's heavy homing shot. It only locks onto targets inside a narrow cone in
+// front of the ship, gives up if its target ends up behind it, and accelerates once it
+// is halfway to the target. Deals much more damage than a laser, with reduced upgrade
+// scaling, and its launch sound fades out when it is destroyed.
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -12,6 +17,15 @@ public class Torpedo : MonoBehaviour
     public float missOffset = 1.5f;
     public float lifetime = 6f;
     public GameObject hitEffect;
+    public float soundFadeTime = 0.1f;
+    public float boostMultiplier = 2f;
+    public float boostAcceleration = 25f;
+
+    private float startDistance;
+    private float currentSpeed;
+    private bool boosted;
+
+    [HideInInspector] public int launchSound = -1;
 
     private Transform target;
     private Rigidbody2D rb;
@@ -24,15 +38,18 @@ public class Torpedo : MonoBehaviour
         cam = Camera.main;
         rb = GetComponent<Rigidbody2D>();
         rb.bodyType = RigidbodyType2D.Kinematic;
+        currentSpeed = speed;
         AcquireTarget();
         Destroy(gameObject, lifetime);
     }
 
+    // Picks the closest target: the boss first, then turrets, then asteroids/crates.
     void AcquireTarget()
     {
         if (Boss.Active != null) target = Boss.Active.transform;
         if (target == null) target = FindClosestTurret();
         if (target == null) target = FindClosestBreakable();
+        startDistance = target != null ? Vector2.Distance(target.position, transform.position) : 0f;
         aimOffset = target != null && Random.value < missChance ? (Vector3)(Random.insideUnitCircle.normalized * missOffset) : Vector3.zero;
     }
 
@@ -64,12 +81,14 @@ public class Torpedo : MonoBehaviour
         return best;
     }
 
+    // Checks a target is ahead of the ship and inside the aiming cone.
     bool IsInFront(Transform t)
     {
         Vector2 dir = t.position - transform.position;
         return dir.x > 0f && Vector2.Angle(Vector2.right, dir) <= maxTargetAngle;
     }
 
+    // Homing, half-distance speed boost, and flying off screen cleanup.
     void Update()
     {
         if (homing && target == null)
@@ -96,13 +115,25 @@ public class Torpedo : MonoBehaviour
             transform.rotation = Quaternion.Euler(0f, 0f, angle);
         }
 
-        rb.velocity = transform.up * speed;
+        if (!boosted && homing && target != null && startDistance > 0f && Vector2.Distance(target.position, transform.position) <= startDistance * 0.5f)
+        {
+            boosted = true;
+        }
+        currentSpeed = Mathf.MoveTowards(currentSpeed, boosted ? speed * boostMultiplier : speed, boostAcceleration * Time.deltaTime);
+        rb.velocity = transform.up * currentSpeed;
 
         Vector3 vp = cam.WorldToViewportPoint(transform.position);
         if (vp.x < -0.1f || vp.x > 1.1f || vp.y < -0.1f || vp.y > 1.1f)
         {
             Destroy(gameObject);
         }
+    }
+
+    // Cuts the launch sound short when the torpedo is destroyed, so the rocket
+    // noise doesn't linger after the impact.
+    void OnDestroy()
+    {
+        AudioManager.FadeOut(launchSound, soundFadeTime);
     }
 
     void OnTriggerEnter2D(Collider2D col)

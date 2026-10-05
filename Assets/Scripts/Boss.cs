@@ -1,3 +1,8 @@
+// Boss
+// The level boss. Flies in from off screen to a hold point (the player can't shoot it
+// until it arrives), moves between lanes, and fires at the player from one or more fire
+// points. On death it plays a cutscene: drifts to the centre lane while shaking,
+// spinning and exploding, then spawns the portal. Its health scales with boss number.
 using UnityEngine;
 
 public class Boss : MonoBehaviour
@@ -41,9 +46,16 @@ public class Boss : MonoBehaviour
     private float nextFireTime;
     private bool entered;
     private bool dying;
+
+    public bool IsEngaged
+    {
+        get { return entered && !dying; }
+    }
     private int fireIndex;
     private float halfWidth;
 
+    // Awake runs before Start, so the boss re-anchors itself off the right edge and
+    // rotates to face the player before it can be seen on the first frame.
     void Awake()
     {
         Active = this;
@@ -75,6 +87,8 @@ public class Boss : MonoBehaviour
         targetY = transform.position.y;
     }
 
+    // Entrance and combat: glide to the hold point, then pick lanes, fire, and
+    // shoot at the player. IsEngaged turns true only once the entrance is done.
     void Update()
     {
         if (dying) return;
@@ -119,6 +133,7 @@ public class Boss : MonoBehaviour
         }
     }
 
+    // Fires one shot from a point, aimed at the player and tinted with this boss's colour.
     void FireFrom(Transform point)
     {
         Vector2 dir = player.position - point.position;
@@ -129,13 +144,17 @@ public class Boss : MonoBehaviour
         AudioManager.Play(AudioManager.Sfx.EnemyLaser);
     }
 
+    // Takes damage only while engaged. Death runs as a coroutine so the
+    // shake/spin/explosion cutscene can play out over time.
     public void TakeHit(float damage)
     {
-        if (dying) return;
+        if (!IsEngaged) return;
         health -= damage;
         if (health <= 0f) StartCoroutine(Die());
     }
 
+    // Death cutscene: drifts to the centre lane over deathSettleTime while shaking and
+    // spinning, popping explosions across the sprite, then one big blast and the portal.
     System.Collections.IEnumerator Die()
     {
         dying = true;
